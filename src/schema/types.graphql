@@ -1,0 +1,30 @@
+scalar DateTime
+
+type CustomLink {
+	id: String!
+	url: String!
+	name: String!
+	addedAt: DateTime!
+	addedBy: String
+	tags: String!
+}
+
+input UserInputLink {
+	url: String!
+	name: String!
+	addedAt: DateTime!
+	addedBy: String
+	tags: String!
+}
+
+
+type Query {
+	echo: String
+	listLinks: [Link!]
+	getLink(id: String!): CustomLink
+}
+
+type Mutation {
+	createLink(input: UserInputLink!): CustomLink
+	deleteLink(id: String!): CustomLink
+}

@@ -1,0 +1,113 @@
+service:
+  name: link-news
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+  - serverless-dynamodb-local
+  - serverless-plugin-offline-dynamodb-stream
+  - serverless-offline
+  
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  tableName: ${self:custom.stage}-events
+  tableThroughputs:
+    prod: 1 #more throughput on production env 
+    default: 1
+  tableThroughput: ${self:custom.tableThroughputs.${self:custom.stage}, self:custom.tableThroughputs.default}
+  serverless-offline:
+    host: 0.0.0.0
+    port: 15001
+  dynamodb:
+    stages:
+      - default
+    start:
+      port: 15002
+      inMemory: true
+      heapInitial: 200m
+      heapMax: 1g
+      migrate: true
+      seed: true
+      convertEmptyValues: true
+      #nostart: true
+  dynamodbStream:
+    host: localhost
+    port: 15002
+    streams:
+      - table: ${self:custom.tableName}
+        functions:
+          - processStreams
+  environment: ${file(env.yml):${self:custom.stage}, file(env.yml):default}
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  stage: default
+  environment:
+    Events_Table: ${self:custom.tableName}
+    LOCAL_DYNAMODB_PORT: ${self:custom.dynamodb.start.port}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:ListTables
+        - dynamodb:DescribeTable
+        - dynamodb:DescribeStream
+        - dynamodb:ListStreams
+        - dynamodb:GetShardIterator
+        - dynamodb:BatchGetItem
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:DescribeReservedCapacity
+        - dynamodb:DescribeReservedCapacityOfferings
+        - dynamodb:GetRecords
+      Resource:
+        Fn::Join:
+          - ""
+          - - "arn:aws:dynamodb:*:*:table/"
+            - Ref: LinksTable #The one derived from dynamodb.yml
+    - Effect: Allow
+      Action:
+        - es:ESHttpPost
+        - es:ESHttpPut
+        - es:ESHttpDelete
+        - es:ESHttpGet
+      Resource:
+        - { "Fn::GetAtt": ["EventsGqlElasticSearch", "DomainArn"] }
+        - { "Fn::Join": ["", ["Fn::GetAtt": ["EventsGqlElasticSearch", "DomainArn"], "/*"]] }    
+    
+functions:
+  echo:
+    handler: build/main/handler.graphqlHandler
+    events:
+      - http:
+          path: graphql
+          method: POST
+          cors: true
+      - http:
+          path: graphql
+          method: GET
+          cors: true     
+  processStreams:
+    environment:
+      SYSTEM_URL: http://allibilli.com/api/v2
+    handler: build/main/handler.processStreams
+    memorySize: 128
+    timeout: 60
+    events:
+      - stream:
+          type: dynamodb
+          batchSize: 100
+          enabled: true
+          arn:
+            Fn::GetAtt:
+            - LinksTable
+            - StreamArn
+resources:
+  # DynamoDB
+  - ${file(./src/dynamodb/dynamodb.yml)}
+  # elasticsearch
+  - ${file(./src/elasticSearch/elasticsearch.yml)}  

@@ -3,7 +3,9 @@ build
 test
 src/**.js
 .idea/*
-
+.dynamodb/*
+.history/*
+.serverless/*
 coverage
 .nyc_output
 *.log

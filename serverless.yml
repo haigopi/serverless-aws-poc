@@ -10,7 +10,7 @@ plugins:
   
 custom:
   stage: ${opt:stage, self:provider.stage}
-  tableName: ${self:custom.stage}-events
+  tableName: ${self:custom.stage}-links
   tableThroughputs:
     prod: 1 #more throughput on production env 
     default: 1
@@ -46,6 +46,8 @@ provider:
   environment:
     Links_Table: ${self:custom.tableName}
     LOCAL_DYNAMODB_PORT: ${self:custom.dynamodb.start.port}
+    ELASTICSEARCH_URL:
+      Fn::GetAtt: ["EventsGqlElasticSearch", "DomainEndpoint"]
   iamRoleStatements:
     - Effect: Allow
       Action:

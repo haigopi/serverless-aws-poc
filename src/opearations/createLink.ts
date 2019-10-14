@@ -6,13 +6,13 @@ import uuid from 'uuid-random';
 const createCustomLink = (link: CustomLink) =>
 	promisify((callback: any) => {
 		link.id = uuid();
-		console.log('Link: ', link);
+		
 		const params = {
 			Item: link,
 			TableName: process.env.Links_Table,
 			Key: link.id
 		};
-
+		console.log('params: ', params);
 		return dbClient.put(params, (err, data) => {
 			console.log('Data: ', data);
 			if (err) {

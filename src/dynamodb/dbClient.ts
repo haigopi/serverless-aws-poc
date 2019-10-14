@@ -2,10 +2,12 @@ import { DynamoDB } from 'aws-sdk';
 
 let dbClient = new DynamoDB.DocumentClient();
 
-const DYNAMODB_PORT = process.env.LOCAL_DYNAMODB_PORT
-console.log('Running offline? ', process.env.IS_OFFLINE, DYNAMODB_PORT);
 
 if (process.env.IS_OFFLINE) {
+	
+	const DYNAMODB_PORT = process.env.LOCAL_DYNAMODB_PORT
+	console.log('Offline:', process.env.IS_OFFLINE, " Port: ", DYNAMODB_PORT);
+
 	dbClient = new DynamoDB.DocumentClient({
 		region: 'localhost',
 		endpoint: `http://localhost:${DYNAMODB_PORT}`,
@@ -13,5 +15,6 @@ if (process.env.IS_OFFLINE) {
 		secretAccessKey: 'DEFAULT_SECRET'
 	});
 }
+console.log('DBClient: ', dbClient);
 
 export { dbClient };

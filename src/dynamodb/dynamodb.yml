@@ -4,10 +4,10 @@ Resources:
     Properties:
       TableName: ${self:custom.tableName}
       AttributeDefinitions:
-        - AttributeName: eventId
+        - AttributeName: id
           AttributeType: S
       KeySchema:
-        - AttributeName: eventId
+        - AttributeName: id
           KeyType: HASH
     # Set the capacity based on the stage
       ProvisionedThroughput:

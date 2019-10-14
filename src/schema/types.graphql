@@ -20,7 +20,7 @@ input UserInputLink {
 
 type Query {
 	echo: String
-	listLinks: [Link!]
+	listLinks: [CustomLink!]
 	getLink(id: String!): CustomLink
 }
 

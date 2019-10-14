@@ -44,7 +44,7 @@ provider:
   runtime: nodejs10.x
   stage: default
   environment:
-    Events_Table: ${self:custom.tableName}
+    Links_Table: ${self:custom.tableName}
     LOCAL_DYNAMODB_PORT: ${self:custom.dynamodb.start.port}
   iamRoleStatements:
     - Effect: Allow

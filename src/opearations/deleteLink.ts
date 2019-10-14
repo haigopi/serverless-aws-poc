@@ -1,22 +1,22 @@
 import { dbClient } from '../dynamodb/dbClient';
 import promisify from '../handyUtils/promisify';
 
-const deleteEvent = (eventId: String) =>
+const deleteLink = (id: String) =>
 	promisify((callback: any) => {
-		console.log('Delete Event: ', eventId);
+		console.log('Delete Link: ', id);
 		const params = {
-			TableName: process.env.Events_Table,
-			Key: { eventId }
+			TableName: process.env.Links_Table,
+			Key: { id }
 		};
 
 		return dbClient.delete(params, callback);
 	})
 		.then((r: any) => {
-			console.log('Delet Resulted Event: ', r, r.Item);
+			console.log('Delet Resulted Link: ', r, r.Item);
 			return r;
 		})
 		.catch((err: any) => {
 			console.log(err);
 		});
 
-export default deleteEvent;
+export default deleteLink;

@@ -9,7 +9,7 @@ const createCustomLink = (link: CustomLink) =>
 		console.log('Link: ', link);
 		const params = {
 			Item: link,
-			TableName: process.env.Events_Table,
+			TableName: process.env.Links_Table,
 			Key: link.id
 		};
 

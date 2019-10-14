@@ -2,19 +2,19 @@ scalar DateTime
 
 type CustomLink {
 	id: String!
-	url: String!
-	name: String!
-	addedAt: DateTime!
+	link: String
+	name: String
+	addedAt: DateTime
 	addedBy: String
-	tags: String!
+	tags: String
 }
 
 input UserInputLink {
-	url: String!
-	name: String!
-	addedAt: DateTime!
+	link: String
+	name: String
+	addedAt: DateTime
 	addedBy: String
-	tags: String!
+	tags: String
 }
 
 
